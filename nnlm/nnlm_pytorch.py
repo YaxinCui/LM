@@ -27,7 +27,7 @@ class NNLM(nn.Module):
         self.hidden_num = hidden_num
 
         self.embeds = nn.Embedding(vocab_size, word_dim, max_norm=2, norm_type=2)    # embeds [vocab_size, word_dim]
-        torch.nn.init.uniform(self.embeds.weight, a=-1, b=1)
+        torch.nn.init.uniform(self.embeds.weight, a=-2, b=2)
 
         self.layer1 = nn.Sequential(
                 nn.Linear(win_size * word_dim, hidden_num),
@@ -50,7 +50,16 @@ class NNLM(nn.Module):
 #        x = x.view(-1, 1)
         out = self.layer1(x)
         out = self.layer2(out)
+#        print("weight:", self.embeds.weight[0][:20])
+        embeddings_norm = torch.sqrt(torch.sum(torch.mul(self.embeds.weight, self.embeds.weight), dim=1))
+        #print("embed shape", embeddings_norm.shape)
+        #print("embed type", embeddings_norm.type)
+        #print("weight shape", self.embeds.weight.shape)
+        #print("weight type", self.embeds.weight.type)
+        self.embeds.from_pretrained(self.embeds.weight / embeddings_norm.unsqueeze(1))
+        
         return out
+        
 
 def main():
     parser = argparse.ArgumentParser()
@@ -96,8 +105,8 @@ def main():
             output = model(x)
 
 
-            print("output  ", output[10:20], " \n shape ", output.shape)
-            print("target ", target[10:20], " \n shape ", target.shape)
+            #print("output  ", output[10:20], " \n shape ", output.shape)
+            #print("target ", target[10:20], " \n shape ", target.shape)
             
             train_loss = criterion(output, target)
             end = time.time()
