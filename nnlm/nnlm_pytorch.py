@@ -26,7 +26,7 @@ class NNLM(nn.Module):
         self.win_size = win_size
         self.hidden_num = hidden_num
 
-        self.embeds = nn.Embedding(vocab_size, word_dim, max_norm=2, norm_type=2)    # embeds [vocab_size, word_dim]
+        self.embeds = nn.Embedding(vocab_size, word_dim)    # embeds [vocab_size, word_dim]
         torch.nn.init.uniform(self.embeds.weight, a=-2, b=2)
 
         self.layer1 = nn.Sequential(
@@ -39,10 +39,10 @@ class NNLM(nn.Module):
                 nn.Linear(hidden_num, vocab_size),
                 nn.Softmax()
             )
-        torch.nn.init.normal(self.layer1[0].weight, std=1.0 / math.sqrt(hidden_num))
-        torch.nn.init.normal(self.layer1[0].bias, std=1.0 / math.sqrt(hidden_num))
-        torch.nn.init.normal(self.layer2[0].weight, std=1.0 / math.sqrt(win_size * word_dim))
-        torch.nn.init.normal(self.layer2[0].bias, std=1.0 / math.sqrt(hidden_num))
+#        torch.nn.init.normal(self.layer1[0].weight, std=1.0 / math.sqrt(hidden_num))
+#        torch.nn.init.normal(self.layer1[0].bias, std=1.0 / math.sqrt(hidden_num))
+#        torch.nn.init.normal(self.layer2[0].weight, std=1.0 / math.sqrt(win_size * word_dim))
+#        torch.nn.init.normal(self.layer2[0].bias, std=1.0 / math.sqrt(hidden_num))
 
     def forward(self, x):
         x = self.embeds(x)
@@ -51,12 +51,12 @@ class NNLM(nn.Module):
         out = self.layer1(x)
         out = self.layer2(out)
 #        print("weight:", self.embeds.weight[0][:20])
-        embeddings_norm = torch.sqrt(torch.sum(torch.mul(self.embeds.weight, self.embeds.weight), dim=1))
+#        embeddings_norm = torch.sqrt(torch.sum(torch.mul(self.embeds.weight, self.embeds.weight), dim=1))
         #print("embed shape", embeddings_norm.shape)
         #print("embed type", embeddings_norm.type)
         #print("weight shape", self.embeds.weight.shape)
         #print("weight type", self.embeds.weight.type)
-        self.embeds.from_pretrained(self.embeds.weight / embeddings_norm.unsqueeze(1))
+#        self.embeds.from_pretrained(self.embeds.weight / embeddings_norm.unsqueeze(1))
         
         return out
         
@@ -68,7 +68,7 @@ def main():
                        
     parser.add_argument('--data_name', type=str, default='input.en.txt',
                        help='data directory containing input.en.txt')
-    parser.add_argument('--batch_size', type=int, default=120,
+    parser.add_argument('--batch_size', type=int, default=15,
                        help='minibatch size')
     parser.add_argument('--win_size', type=int, default=5,
                        help='context sequence length')
@@ -92,7 +92,7 @@ def main():
     if torch.cuda.is_available():
         model = model.cuda()
 
-    optimizer = optim.Adam(model.parameters(), lr=0.1)
+    optimizer = optim.Adam(model.parameters(), lr=3e-4)
 
     model.train()
     for e in range(args.num_epochs):
