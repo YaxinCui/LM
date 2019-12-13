@@ -1,3 +1,5 @@
 /model_data
 */.vscode
 /nnlm/__pycache__
+*/.npy
+*/.pkl

@@ -100,7 +100,7 @@ def main():
     if torch.cuda.is_available():
         model = model.cuda()
 
-    optimizer = optim.Adam(model.parameters(), lr=3e-4)
+    optimizer = optim.Adam(model.parameters(), lr=3e-4, weight_decay=0.01)
 
     model.train()
     for e in range(args.num_epochs):
