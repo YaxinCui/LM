@@ -1,5 +1,9 @@
 /model_data
+!/model_data/down_elmo_model_data.sh
+!/model_data/down_gpt_mod
 */.vscode
-/nnlm/__pycache__
-*/.npy
-*/.pkl
+*/__pycache__
+*.npy
+*.pkl
+*elmo_*_options.json
+*elmo_*_weights.hdf5
