@@ -1,6 +1,6 @@
-/model_data
-!/model_data/down_elmo_model_data.sh
-!/model_data/down_gpt_mod
+/model_data/*
+!model_data/down_elmo_model_data.sh
+!model_data/down_bert_model_data.sh
 */.vscode
 */__pycache__
 *.npy
